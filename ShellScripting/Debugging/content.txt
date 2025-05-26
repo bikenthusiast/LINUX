@@ -1,0 +1,4 @@
+total 8
+96950373 drwxr-xr-x  3 tobiaskapfhammer  staff   96 22 Mai 18:35 .
+96925182 drwxr-xr-x  4 tobiaskapfhammer  staff  128 22 Mai 18:11 ..
+96951513 -rwxr-xr-x  1 tobiaskapfhammer  staff  345 22 Mai 18:35 first_script.sh
