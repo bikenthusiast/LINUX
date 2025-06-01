@@ -1,0 +1,53 @@
+#!/bin/zsh
+printf "Disk Space Management \n"
+# current diskspace used
+df -h | awk '$9 == "/System/Volumes/Data" {printf "Total Disk Space: " $2 "\t\tUsed Disk Space: " $3 "\t\tAvailable Disk Space: " $4}'
+printf "\nRAM Performance"
+
+# current ram used
+page_size=$(sysctl -n hw.pagesize)                            
+
+# Get vm_stat output and parse for active, inactive, and wired pages                                                                │
+active_pages=$(vm_stat | grep "Pages active:" | awk '{print $3}' | sed 's/\\.//')
+inactive_pages=$(vm_stat | grep "Pages inactive:" | awk '{print $3}' | sed 's/\\.//')
+wired_pages=$(vm_stat | grep "Pages wired down:" | awk '{print $4}' | sed 's/\\.//')
+
+# Calculate total used pages
+ total_used_pages=$((active_pages + inactive_pages + wired_pages))           
+
+# Calculate total used memory in bytes                                      
+total_used_bytes=$((total_used_pages * page_size))                          
+
+# Convert to GB for human-readable output                                                     
+total_used_gb=$(awk -v bytes="$total_used_bytes" 'BEGIN {print bytes / (1024*1024*1024)}')
+ 
+printf "\nUsed RAM: ${total_used_gb} GB"
+
+# Total RAM on system
+# Get the total physical memory in bytes
+total_memory_bytes=$(sysctl -n hw.memsize)
+
+# Convert to GB for human-readable output using awk for floating-point division  
+
+total_memory_gb=$(awk -v bytes="$total_memory_bytes" 'BEGIN {print bytes / (1024*1024*1024)}')                                                                 
+printf "\t\tTotal Physical RAM: ${total_memory_gb} GB"
+
+
+#printf "Used RAM (%): " ($total_used_gb/$total_memory_gb)
+
+%export LANG=C
+
+# Perform the calculation using bc with a here document
+# The 'scale' command sets the number of decimal places for the result
+ram_percentage=$(bc -l << EOF
+scale=2
+($total_used_gb / $total_memory_gb)*100
+EOF
+)
+ printf "\t\tRAM Percentage Used: %.2f%%\n" "$ram_percentage"
+# current process used
+# todo
+printf "\n Hello"
+# current network width
+# todo
+
